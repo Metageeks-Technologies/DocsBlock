@@ -1,4 +1,4 @@
-//URI ipfs://bafkreic6ov4qo4ucd4g4uuyve4h72nc4y2lg7ugtq3n3vxnfp3lojvtmdu
+//URI ipfs://bafkreic3tvpjzly65b3t34nfvv5nopkmio3nwy24wi3v6h6nwufjs7m4vi
 
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
@@ -16,7 +16,7 @@ contract Soulbound is ERC721, ERC721URIStorage, Ownable {
     event Attest(address indexed to, uint256 indexed tokenId);
     event Revoke(address indexed to, uint256 indexed tokenId);
 
-    constructor() ERC721("Certificate", "CT") {}
+    constructor() ERC721("Harvard Certificates", "H-CT") {}
 
     function safeMint(address to, string memory uri) public onlyOwner {
         uint256 tokenId = _tokenIdCounter.current();
