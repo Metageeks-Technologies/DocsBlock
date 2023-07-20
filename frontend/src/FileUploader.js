@@ -13,9 +13,8 @@ const FileUploader = () => {
     const fileBuffer = await file.arrayBuffer();
     const digest = await window.crypto.subtle.digest("SHA-256", fileBuffer);
     const hashArray = Array.from(new Uint8Array(digest));
-    const hashHex = hashArray
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
+    const hashHex =
+      "0x" + hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
     setHash(hashHex);
   };
 
