@@ -1,7 +1,7 @@
 //URI ipfs://bafkreic3tvpjzly65b3t34nfvv5nopkmio3nwy24wi3v6h6nwufjs7m4vi
 
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
+pragma solidity 0.8.20;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
