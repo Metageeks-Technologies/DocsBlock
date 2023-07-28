@@ -4,7 +4,7 @@ pragma solidity 0.8.20;
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract DocumentStore is Ownable {
-    mapping(uint256 => bytes32) private documentHashes;
+    mapping(bytes32 => bytes32) private documentHashes;
 
     function storeHash(
         uint256 documentId,
