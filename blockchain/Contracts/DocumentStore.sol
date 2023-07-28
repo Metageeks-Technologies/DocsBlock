@@ -7,7 +7,7 @@ contract DocumentStore is Ownable {
     mapping(bytes32 => bytes32) private documentHashes;
 
     function storeHash(
-        uint256 documentId,
+        bytes32 documentId,
         bytes32 documentHash
     ) public onlyOwner {
         require(documentHashes[documentId] == 0, "Document hash already set");
@@ -15,7 +15,7 @@ contract DocumentStore is Ownable {
     }
 
     function verifyHash(
-        uint256 documentId,
+        bytes32 documentId,
         bytes32 documentHash
     ) public view returns (bool) {
         return documentHashes[documentId] == documentHash;
