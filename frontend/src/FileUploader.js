@@ -1,15 +1,19 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
 import ABI from "./ContractABI.json";
+import {
+  GelatoRelay,
+  SponsoredCallERC2771Request,
+} from "@gelatonetwork/relay-sdk";
 
 const provider = new ethers.providers.JsonRpcProvider(
   "https://rpc.ankr.com/polygon_mumbai"
 );
-const contract = new ethers.Contract(
-  "0x6a11a7f744c733fd6d8c927947aad0b25745e327",
-  ABI,
-  provider
-);
+const DocStore = "0xd37A0ee8BDB7B9A505a5b0041977CBA7dEEe173d";
+const contract = new ethers.Contract(DocStore, ABI, provider);
+
+const relay = new GelatoRelay();
+const apiKey = "3jRwo_T6VJZxOARuEYX_0irqBE_eLZyZ5qg_RDXLbXM_";
 
 const FileUploader = () => {
   const [file, setFile] = useState(null);
@@ -37,6 +41,36 @@ const FileUploader = () => {
     setVerificationResult(result);
   };
 
+  const onStoreHash = async () => {
+    const accounts = await window.ethereum.request({
+      method: "eth_requestAccounts",
+    });
+    const provider2 = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider2.getSigner();
+    const user = signer.getAddress();
+    const contract2 = new ethers.Contract(DocStore, ABI, signer);
+    const { data } = await contract2.populateTransaction.storeHash(
+      documentId,
+      hash
+    );
+
+    const network = await provider2.getNetwork();
+
+    const request = {
+      chainId: network.chainId,
+      target: DocStore,
+      data: data,
+      user: user,
+    };
+
+    const relayResponse = await relay.sponsoredCallERC2771(
+      request,
+      provider2,
+      apiKey
+    );
+    console.log(relayResponse);
+  };
+
   return (
     <div>
       <input type="file" onChange={onFileChange} />
@@ -60,6 +94,7 @@ const FileUploader = () => {
           <p>{verificationResult ? "REAL" : "FAKE"}</p>
         </div>
       )}
+      <button onClick={onStoreHash}>Store Hash</button>
     </div>
   );
 };
