@@ -42,12 +42,12 @@ const FileUploader = () => {
   };
 
   const onStoreHash = async () => {
-    const accounts = await window.ethereum.request({
+    await window.ethereum.request({
       method: "eth_requestAccounts",
     });
     const provider2 = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider2.getSigner();
-    const user = signer.getAddress();
+    const signer = await provider2.getSigner();
+    const user = await signer.getAddress();
     const contract2 = new ethers.Contract(DocStore, ABI, signer);
     const { data } = await contract2.populateTransaction.storeHash(
       documentId,
