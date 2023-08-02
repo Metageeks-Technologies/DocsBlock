@@ -164,13 +164,17 @@ const Counter: React.FC<Props> = ({ smartAccount, provider }) => {
     <div style={{ textAlign: "center" }}>
       <input type="file" onChange={onFileChange} />
       <br></br>
-      <button onClick={onFileUpload}>Generate Hash</button>
+      <button style={{ marginTop: "20px" }} onClick={onFileUpload}>
+        Generate Hash
+      </button>
       <br></br>
       <div>Hash: {hash}</div>
       <br></br>
       <input type="number" onChange={onNumberChange} />
       <br></br>
-      <button onClick={verifyHash}>Verify Hash</button>
+      <button style={{ marginTop: "20px" }} onClick={verifyHash}>
+        Verify Hash
+      </button>
       <br></br>
       {verificationResult !== null && (
         <div>
