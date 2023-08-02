@@ -15,123 +15,32 @@ interface Props {
   provider: any;
 }
 
-const TotalCountDisplay: React.FC<{ count: number }> = ({ count }) => {
-  return <div>Total count is {count}</div>;
-};
-
 const Counter: React.FC<Props> = ({ smartAccount, provider }) => {
-  const [count, setCount] = useState<number>(0);
-  const [counterContract, setCounterContract] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [hash, setHash] = useState<string>("");
 
   const counterAddress = "0xB79Ab078F221B6c5f7151A90c1f7E8eFe82c183C";
 
-  useEffect(() => {
-    setIsLoading(true);
-    getCount(false);
-  }, []);
-
-  const getCount = async (isUpdating: boolean) => {
-    const contract = new ethers.Contract(counterAddress, abi, provider);
-    setCounterContract(contract);
-    const currentCount = await contract.count();
-    setCount(currentCount.toNumber());
-    if (isUpdating) {
-      toast.success("Count has been updated!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
-    }
+  const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFile(event.target.files ? event.target.files[0] : null);
   };
 
-  const incrementCount = async () => {
-    try {
-      toast.info("Processing count on the blockchain!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
-
-      const incrementTx = new ethers.utils.Interface([
-        "function incrementCount()",
-      ]);
-      const data = incrementTx.encodeFunctionData("incrementCount");
-
-      const tx1 = {
-        to: counterAddress,
-        data: data,
-      };
-
-      let partialUserOp = await smartAccount.buildUserOp([tx1]);
-
-      const biconomyPaymaster =
-        smartAccount.paymaster as IHybridPaymaster<SponsorUserOperationDto>;
-
-      let paymasterServiceData: SponsorUserOperationDto = {
-        mode: PaymasterMode.SPONSORED,
-        // optional params...
-      };
-
-      try {
-        const paymasterAndDataResponse =
-          await biconomyPaymaster.getPaymasterAndData(
-            partialUserOp,
-            paymasterServiceData
-          );
-        partialUserOp.paymasterAndData =
-          paymasterAndDataResponse.paymasterAndData;
-
-        const userOpResponse = await smartAccount.sendUserOp(partialUserOp);
-        const transactionDetails = await userOpResponse.wait();
-
-        console.log("Transaction Details:", transactionDetails);
-        console.log("Transaction Hash:", userOpResponse.userOpHash);
-
-        toast.success(`Transaction Hash: ${userOpResponse.userOpHash}`, {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
-
-        getCount(true);
-      } catch (e) {
-        console.error("Error executing transaction:", e);
-        // ... handle the error if needed ...
-      }
-    } catch (error) {
-      console.error("Error executing transaction:", error);
-      toast.error("Error occurred, check the console", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
-    }
+  const onFileUpload = async () => {
+    if (!file) return;
+    const fileBuffer = await file.arrayBuffer();
+    const digest = await window.crypto.subtle.digest("SHA-256", fileBuffer);
+    const hashArray = Array.from(new Uint8Array(digest));
+    const hashHex =
+      "0x" + hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+    setHash(hashHex);
   };
-
   return (
     <>
-      <TotalCountDisplay count={count} />
+      <input type="file" onChange={onFileChange} />
+      <br></br>
+      <button onClick={onFileUpload}>Generate Hash</button>
+      <br></br>
+      <div>Hash: {hash}</div>
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -144,8 +53,6 @@ const Counter: React.FC<Props> = ({ smartAccount, provider }) => {
         pauseOnHover
         theme="dark"
       />
-      <br></br>
-      <button onClick={() => incrementCount()}>Increment Count</button>
     </>
   );
 };
