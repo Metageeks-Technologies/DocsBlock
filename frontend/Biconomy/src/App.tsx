@@ -120,10 +120,7 @@ export default function Home() {
 
   return (
     <div>
-      <h1>
-        {" "}
-        Biconomy Smart Accounts using social login + Gasless Transactions
-      </h1>
+      <h1> Certficate Verification</h1>
 
       {!smartAccount && !loading && <button onClick={login}>Login</button>}
       {loading && <p>Loading account details...</p>}

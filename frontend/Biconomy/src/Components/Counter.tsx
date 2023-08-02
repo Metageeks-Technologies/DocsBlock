@@ -18,6 +18,7 @@ interface Props {
 const Counter: React.FC<Props> = ({ smartAccount, provider }) => {
   const [file, setFile] = useState<File | null>(null);
   const [hash, setHash] = useState<string>("");
+  const [number, setNumber] = useState<number | null>(null);
 
   const counterAddress = "0xB79Ab078F221B6c5f7151A90c1f7E8eFe82c183C";
 
@@ -34,13 +35,26 @@ const Counter: React.FC<Props> = ({ smartAccount, provider }) => {
       "0x" + hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
     setHash(hashHex);
   };
+
+  const onNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNumber(Number(event.target.value));
+  };
+
+  const verifyHash = () => {
+    // Logic to verify hash will go here
+  };
+
   return (
-    <>
+    <div style={{ textAlign: "center" }}>
       <input type="file" onChange={onFileChange} />
       <br></br>
       <button onClick={onFileUpload}>Generate Hash</button>
       <br></br>
       <div>Hash: {hash}</div>
+      <br></br>
+      <input type="number" onChange={onNumberChange} />
+      <br></br>
+      <button onClick={verifyHash}>Verify Hash</button>
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -53,7 +67,7 @@ const Counter: React.FC<Props> = ({ smartAccount, provider }) => {
         pauseOnHover
         theme="dark"
       />
-    </>
+    </div>
   );
 };
 
