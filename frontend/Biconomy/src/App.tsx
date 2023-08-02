@@ -129,7 +129,9 @@ export default function Home() {
           <h3>Smart account address:</h3>
           <p>{smartAccount.address}</p>
           <Counter smartAccount={smartAccount} provider={provider} />
-          <button onClick={logout}>Logout</button>
+          <button style={{ marginTop: "20px" }} onClick={logout}>
+            Logout
+          </button>
         </div>
       )}
     </div>

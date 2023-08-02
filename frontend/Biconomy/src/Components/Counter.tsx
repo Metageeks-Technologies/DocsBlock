@@ -168,9 +168,11 @@ const Counter: React.FC<Props> = ({ smartAccount, provider }) => {
         Generate Hash
       </button>
       <br></br>
-      <div>Hash: {hash}</div>
+      <br></br>
+      <div> Hash: {hash}</div>
       <br></br>
       <input type="number" onChange={onNumberChange} />
+      <br></br>
       <br></br>
       <button style={{ marginTop: "20px" }} onClick={verifyHash}>
         Verify Hash
