@@ -44,6 +44,89 @@ const Counter: React.FC<Props> = ({ smartAccount, provider }) => {
     // Logic to verify hash will go here
   };
 
+  const storeHash = async () => {
+    if (number === null || hash === "") {
+      toast.error("Please enter a number and generate a hash first.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      return;
+    }
+
+    try {
+      const storeHashTx = new ethers.utils.Interface([
+        "function storeHash(uint256 documentId, bytes32 documentHash)",
+      ]);
+      const data = storeHashTx.encodeFunctionData("storeHash", [
+        number,
+        ethers.utils.arrayify(hash),
+      ]);
+
+      const tx1 = {
+        to: counterAddress,
+        data: data,
+      };
+
+      let partialUserOp = await smartAccount.buildUserOp([tx1]);
+
+      const biconomyPaymaster =
+        smartAccount.paymaster as IHybridPaymaster<SponsorUserOperationDto>;
+
+      let paymasterServiceData: SponsorUserOperationDto = {
+        mode: PaymasterMode.SPONSORED,
+        // optional params...
+      };
+
+      try {
+        const paymasterAndDataResponse =
+          await biconomyPaymaster.getPaymasterAndData(
+            partialUserOp,
+            paymasterServiceData
+          );
+        partialUserOp.paymasterAndData =
+          paymasterAndDataResponse.paymasterAndData;
+
+        const userOpResponse = await smartAccount.sendUserOp(partialUserOp);
+        const transactionDetails = await userOpResponse.wait();
+
+        console.log("Transaction Details:", transactionDetails);
+        console.log("Transaction Hash:", userOpResponse.userOpHash);
+
+        toast.success(`Transaction Hash: ${userOpResponse.userOpHash}`, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      } catch (e) {
+        console.error("Error executing transaction:", e);
+        // ... handle the error if needed ...
+      }
+    } catch (error) {
+      console.error("Error executing transaction:", error);
+      toast.error("Error occurred, check the console", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    }
+  };
+
   return (
     <div style={{ textAlign: "center" }}>
       <input type="file" onChange={onFileChange} />
@@ -55,6 +138,8 @@ const Counter: React.FC<Props> = ({ smartAccount, provider }) => {
       <input type="number" onChange={onNumberChange} />
       <br></br>
       <button onClick={verifyHash}>Verify Hash</button>
+      <br></br>
+      <button onClick={storeHash}>Store Hash</button>
       <ToastContainer
         position="top-right"
         autoClose={5000}
