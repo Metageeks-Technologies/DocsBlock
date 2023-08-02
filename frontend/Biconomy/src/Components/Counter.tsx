@@ -19,6 +19,9 @@ const Counter: React.FC<Props> = ({ smartAccount, provider }) => {
   const [file, setFile] = useState<File | null>(null);
   const [hash, setHash] = useState<string>("");
   const [number, setNumber] = useState<number | null>(null);
+  const [verificationResult, setVerificationResult] = useState<boolean | null>(
+    null
+  );
 
   const counterAddress = "0x48041c87E5B054D7bf5414cCAaF83d280cA95fD6";
 
@@ -40,8 +43,38 @@ const Counter: React.FC<Props> = ({ smartAccount, provider }) => {
     setNumber(Number(event.target.value));
   };
 
-  const verifyHash = () => {
-    // Logic to verify hash will go here
+  const verifyHash = async () => {
+    if (number === null || hash === "") {
+      toast.error("Please enter a number and generate a hash first.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      return;
+    }
+
+    try {
+      const contract = new ethers.Contract(counterAddress, abi, provider);
+      const result = await contract.verifyHash(number, hash);
+      setVerificationResult(result);
+    } catch (error) {
+      console.error("Error verifying hash:", error);
+      toast.error("Error occurred, check the console", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    }
   };
 
   const storeHash = async () => {
@@ -138,6 +171,13 @@ const Counter: React.FC<Props> = ({ smartAccount, provider }) => {
       <input type="number" onChange={onNumberChange} />
       <br></br>
       <button onClick={verifyHash}>Verify Hash</button>
+      <br></br>
+      {verificationResult !== null && (
+        <div>
+          <h2>Verification Result:</h2>
+          <p>{verificationResult ? "REAL" : "FAKE"}</p>
+        </div>
+      )}
       <br></br>
       <button onClick={storeHash}>Store Hash</button>
       <ToastContainer
