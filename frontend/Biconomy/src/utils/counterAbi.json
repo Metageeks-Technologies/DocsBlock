@@ -2,9 +2,9 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
+        "internalType": "uint256",
         "name": "documentId",
-        "type": "bytes32"
+        "type": "uint256"
       },
       {
         "internalType": "bytes32",
@@ -20,9 +20,9 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
+        "internalType": "uint256",
         "name": "documentId",
-        "type": "bytes32"
+        "type": "uint256"
       },
       {
         "internalType": "bytes32",

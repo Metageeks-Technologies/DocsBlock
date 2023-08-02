@@ -20,7 +20,7 @@ const Counter: React.FC<Props> = ({ smartAccount, provider }) => {
   const [hash, setHash] = useState<string>("");
   const [number, setNumber] = useState<number | null>(null);
 
-  const counterAddress = "0xB79Ab078F221B6c5f7151A90c1f7E8eFe82c183C";
+  const counterAddress = "0x48041c87E5B054D7bf5414cCAaF83d280cA95fD6";
 
   const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFile(event.target.files ? event.target.files[0] : null);
