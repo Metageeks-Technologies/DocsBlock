@@ -18,12 +18,12 @@ interface Props {
 const Counter: React.FC<Props> = ({ smartAccount, provider }) => {
   const [file, setFile] = useState<File | null>(null);
   const [hash, setHash] = useState<string>("");
-  const [number, setNumber] = useState<number | null>(null);
+  const [documentId, setDocumentId] = useState<string>("");
   const [verificationResult, setVerificationResult] = useState<boolean | null>(
     null
   );
 
-  const counterAddress = "0xc8d467e59181cb3375f9f8032460429d3b54f514";
+  const counterAddress = "0xAB875754B7f4Cf95c3F4dbD1E703a31E5642f43D";
 
   const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFile(event.target.files ? event.target.files[0] : null);
@@ -39,13 +39,13 @@ const Counter: React.FC<Props> = ({ smartAccount, provider }) => {
     setHash(hashHex);
   };
 
-  const onNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNumber(Number(event.target.value));
+  const onDocumentIdChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDocumentId(event.target.value);
   };
 
   const verifyHash = async () => {
-    if (number === null || hash === "") {
-      toast.error("Please enter a number and generate a hash first.", {
+    if (documentId === "" || hash === "") {
+      toast.error("Please enter a documentId and generate a hash first.", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -60,7 +60,7 @@ const Counter: React.FC<Props> = ({ smartAccount, provider }) => {
 
     try {
       const contract = new ethers.Contract(counterAddress, abi, provider);
-      const result = await contract.verifyHash(number, hash);
+      const result = await contract.verifyHash(documentId, hash);
       setVerificationResult(result);
     } catch (error) {
       console.error("Error verifying hash:", error);
@@ -78,8 +78,8 @@ const Counter: React.FC<Props> = ({ smartAccount, provider }) => {
   };
 
   const storeHash = async () => {
-    if (number === null || hash === "") {
-      toast.error("Please enter a number and generate a hash first.", {
+    if (documentId === "" || hash === "") {
+      toast.error("Please enter a documentId and generate a hash first.", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -94,10 +94,10 @@ const Counter: React.FC<Props> = ({ smartAccount, provider }) => {
 
     try {
       const storeHashTx = new ethers.utils.Interface([
-        "function storeHash(uint256 documentId, bytes32 documentHash)",
+        "function storeHash(bytes16 documentId, bytes32 documentHash)",
       ]);
       const data = storeHashTx.encodeFunctionData("storeHash", [
-        number,
+        ethers.utils.arrayify(documentId),
         ethers.utils.arrayify(hash),
       ]);
 
@@ -171,7 +171,7 @@ const Counter: React.FC<Props> = ({ smartAccount, provider }) => {
       <br></br>
       <div> Hash: {hash}</div>
       <br></br>
-      <input type="number" onChange={onNumberChange} />
+      <input type="text" onChange={onDocumentIdChange} value={documentId} />
       <br></br>
       <br></br>
       <button style={{ marginTop: "20px" }} onClick={verifyHash}>
